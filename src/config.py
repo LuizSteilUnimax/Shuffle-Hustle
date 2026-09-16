@@ -1,0 +1,4 @@
+LARGURA = 1200
+ALTURA = 600
+FPS = 60
+TITULO = "Mexe-Mexe"

@@ -9,7 +9,7 @@ class Baralho:
         self.cartas = []
         for _ in range(quantidade_baralhos):
             self.cartas.extend(Carta(valor, naipe) for naipe in self.NAIPES for valor in self.VALORES)
-            self.cartas.extend(Carta("CORINGA", "Sem naipe", True) for _ in range(coringas_por_baralho))
+            #self.cartas.extend(Carta("CORINGA", "Sem naipe", True) for _ in range(coringas_por_baralho))
         self.embaralhar()
 
     def embaralhar(self) -> None:

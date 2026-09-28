@@ -25,6 +25,11 @@ class Jogo:
         classes = {"menu": Menu, "configuracoes": Configuracoes, "gameplay": Gameplay}
         self.tela_atual = classes[nome](self)
 
+        if nome == "gameplay":
+            self.audio.tocar_gameplay()
+        elif nome in {"menu", "configuracoes"}:
+            self.audio.tocar_menu()
+
     def aplicar_brilho(self):
         alpha = int((100 - self.brilho) * 2.55)
         if alpha <= 0:

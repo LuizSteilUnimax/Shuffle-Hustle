@@ -29,8 +29,15 @@ class Gameplay:
         self.partida.mesa.jogos = [slot["cartas"][:] for slot in self.espacos_mesa if slot["cartas"]]
 
     def adicionar_slot_mesa(self):
-        nome = f"Combinação {len(self.espacos_mesa) + 1}"
-        rect = pygame.Rect(310 + len(self.espacos_mesa) * 190, 150, 160, 110)
+        idx = len(self.espacos_mesa)
+        nome = f"Combinação {idx + 1}"
+
+        # arrange in rows of 4: cols 0..3 on first row, 4..7 on second row, etc.
+        col = idx % 4
+        row = idx // 4
+        x = 310 + col * 190
+        y = 150 + row * 150
+        rect = pygame.Rect(x, y, 160, 110)
         self.espacos_mesa.append({"nome": nome, "cartas": [], "rect": rect})
         self._sincronizar_mesa()
 
@@ -107,7 +114,7 @@ class Gameplay:
         tela.blit(texto, (rect.x + 16, rect.y + rect.height - 30))
 
     def desenhar_area_mesa(self, tela):
-        rect = pygame.Rect(250, 115, self.jogo.largura - 500, 180)
+        rect = pygame.Rect(250, 115, self.jogo.largura - 500, 400)
         pygame.draw.rect(tela, (54, 86, 60), rect, border_radius=20)
         pygame.draw.rect(tela, BRANCO, rect, 2, border_radius=20)
 
@@ -183,5 +190,6 @@ class Gameplay:
         self.menu.desenhar(tela)
         self.desenhar_mao_jogador(tela)
 
-        aviso = pygame.font.Font(None, 24).render("Estrutura base do jogo: mesa, mão, monte e turno", True, BRANCO)
-        tela.blit(aviso, aviso.get_rect(center=(self.jogo.largura // 2, self.jogo.altura - 30)))
+
+        #aviso = pygame.font.Font(None, 24).render("Estrutura base do jogo: mesa, mão, monte e turno", True, BRANCO)
+        #tela.blit(aviso, aviso.get_rect(center=(self.jogo.largura // 2, self.jogo.altura - 30)))

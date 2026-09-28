@@ -1,6 +1,6 @@
 import pygame
 from .botao import Botao
-from ..cores import BRANCO, PRETO
+from ..cores import BRANCO, PRETO, VERDE_MESA
 
 
 class Configuracoes:
@@ -57,23 +57,26 @@ class Configuracoes:
         pass
 
     def _desenhar_slider(self, tela, trilha, valor, label):
-        pygame.draw.rect(tela, (200, 200, 200), trilha, border_radius=10)
-        pygame.draw.rect(tela, PRETO, trilha, 2, border_radius=10)
+        # use softer green track and white knob for contrast
+        track_color = (120, 170, 130)
+        pygame.draw.rect(tela, track_color, trilha, border_radius=10)
+        pygame.draw.rect(tela, BRANCO, trilha, 2, border_radius=10)
 
         knob_size = 22
         pos_x = trilha.x + (valor / 100) * trilha.width
         knob_rect = pygame.Rect(pos_x - knob_size // 2, trilha.centery - knob_size // 2, knob_size, knob_size)
-        pygame.draw.circle(tela, PRETO, knob_rect.center, knob_size // 2)
+        pygame.draw.circle(tela, BRANCO, knob_rect.center, knob_size // 2)
+        pygame.draw.circle(tela, PRETO, knob_rect.center, knob_size // 2, 2)
 
-        texto_label = self.fonte_label.render(f"{label}", True, PRETO)
-        texto_valor = self.fonte_label.render(f"{valor}%", True, PRETO)
+        texto_label = self.fonte_label.render(f"{label}", True, BRANCO)
+        texto_valor = self.fonte_label.render(f"{valor}%", True, BRANCO)
 
         tela.blit(texto_label, (trilha.x, trilha.y - 35))
         tela.blit(texto_valor, (trilha.x + trilha.width + 18, trilha.y - 8))
 
     def desenhar(self, tela):
-        tela.fill(BRANCO)
-        titulo = self.fonte.render("Configurações", True, PRETO)
+        tela.fill(VERDE_MESA)
+        titulo = self.fonte.render("Configurações", True, BRANCO)
         tela.blit(titulo, titulo.get_rect(center=(self.jogo.largura // 2, 80)))
 
         self._desenhar_slider(tela, self.trilha_volume, self.volume, "Volume")

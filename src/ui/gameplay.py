@@ -50,10 +50,15 @@ class Gameplay:
         inicio = max(180, (self.jogo.largura - (len(mao) - 1) * 38 - 70) // 2)
         rects = []
         for i, carta in enumerate(mao):
+           
+            if self.carta_arrastando is not None and self.carta_arrastando["carta"] == carta:
+                continue
+                
             x = inicio + i * 38
             y = self.jogo.altura - 125
             rects.append((carta, i, pygame.Rect(x, y, CartaSprite.LARGURA, CartaSprite.ALTURA)))
         return rects
+
 
     def tratar_evento(self, evento):
         if self.menu.clicado(evento):
@@ -163,19 +168,21 @@ class Gameplay:
         inicio = max(180, (self.jogo.largura - (len(mao) - 1) * 38 - 70) // 2)
 
         for i, carta in enumerate(mao):
-            rect = CartaSprite.desenhar(tela, carta, inicio + i * 38, self.jogo.altura - 125)
             if self.carta_arrastando is not None and self.carta_arrastando["carta"] == carta:
-                pygame.draw.rect(tela, (255, 255, 255), rect, 2, border_radius=7)
+                continue  
+            
+            CartaSprite.desenhar(tela, carta, inicio + i * 38, self.jogo.altura - 125)
 
+        
         if self.carta_arrastando is not None and self.posicao_drag is not None:
             carta = self.carta_arrastando["carta"]
-            rect = pygame.Rect(self.posicao_drag[0] - 35, self.posicao_drag[1] - 50, CartaSprite.LARGURA, CartaSprite.ALTURA)
-            pygame.draw.rect(tela, BRANCO, rect, border_radius=7)
-            pygame.draw.rect(tela, (0, 0, 0), rect, 2, border_radius=7)
-            cor = (255, 0, 0) if carta.naipe in ("Copas", "Ouros") else (0, 0, 0)
-            texto = pygame.font.Font(None, 24).render("JK" if carta.coringa else carta.valor, True, cor)
-            tela.blit(texto, (rect.x + 7, rect.y + 7))
+            
+            x_drag = self.posicao_drag[0] - (CartaSprite.LARGURA // 2)
+            y_drag = self.posicao_drag[1] - (CartaSprite.ALTURA // 2)
+            
+            CartaSprite.desenhar(tela, carta, x_drag, y_drag, selecionada=True)
 
+        
         legenda = pygame.font.Font(None, 22).render(f"Mão de {jogador.nome}", True, BRANCO)
         tela.blit(legenda, (self.jogo.largura // 2 - legenda.get_width() // 2, self.jogo.altura - 170))
 
@@ -189,6 +196,7 @@ class Gameplay:
         self.passar.desenhar(tela)
         self.menu.desenhar(tela)
         self.desenhar_mao_jogador(tela)
+
 
 
         #aviso = pygame.font.Font(None, 24).render("Estrutura base do jogo: mesa, mão, monte e turno", True, BRANCO)

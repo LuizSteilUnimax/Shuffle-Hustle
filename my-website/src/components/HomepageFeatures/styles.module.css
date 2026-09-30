@@ -1,0 +1,26 @@
+.features {
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+  width: 100%;
+}
+
+.featureSvg {
+  height: 180px;
+  width: 180px;
+  transition: transform 0.3s ease;
+}
+
+.featureSvg:hover {
+  transform: scale(1.05);
+}
+
+.features h3 {
+  color: #1b4332;
+  margin-top: 1rem;
+}
+
+.features p {
+  font-size: 1rem;
+  line-height: 1.6;
+}

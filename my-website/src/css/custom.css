@@ -1,0 +1,107 @@
+/**
+ * Tema personalizado do projeto Mexe-Mexe
+ * UniMAX / UniFAJ
+ */
+
+:root {
+  --ifm-color-primary: #1b5e20;
+  --ifm-color-primary-dark: #174d1a;
+  --ifm-color-primary-darker: #154718;
+  --ifm-color-primary-darkest: #103513;
+  --ifm-color-primary-light: #23752a;
+  --ifm-color-primary-lighter: #27842f;
+  --ifm-color-primary-lightest: #2f9c39;
+
+  --ifm-code-font-size: 95%;
+
+  --ifm-font-family-base:
+    "Segoe UI",
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+
+  --ifm-navbar-background-color: #14532d;
+  --ifm-footer-background-color: #0f172a;
+
+  --ifm-background-color: #f8fafc;
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
+}
+
+/* Tema Dark */
+
+[data-theme="dark"] {
+  --ifm-color-primary: #4ade80;
+  --ifm-color-primary-dark: #3dd872;
+  --ifm-color-primary-darker: #2fd164;
+  --ifm-color-primary-darkest: #25b653;
+  --ifm-color-primary-light: #5ce08c;
+  --ifm-color-primary-lighter: #69e497;
+  --ifm-color-primary-lightest: #88ebad;
+
+  --ifm-background-color: #0f172a;
+
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.08);
+}
+
+/* Hero principal */
+
+.hero {
+  background: linear-gradient(
+    135deg,
+    #14532d 0%,
+    #166534 50%,
+    #1b5e20 100%
+  );
+
+  color: white;
+}
+
+/* Navbar */
+
+.navbar {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Cards da página inicial */
+
+.card,
+.feature {
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+
+.card:hover,
+.feature:hover {
+  transform: translateY(-4px);
+}
+
+/* Blocos de código */
+
+pre {
+  border-radius: 12px;
+}
+
+/* Títulos */
+
+h1 {
+  font-weight: 700;
+}
+
+h2 {
+  color: var(--ifm-color-primary);
+}
+
+/* Tabelas */
+
+table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Footer */
+
+.footer {
+  border-top: 3px solid var(--ifm-color-primary);
+}

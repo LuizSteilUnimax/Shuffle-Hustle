@@ -1,26 +1,69 @@
 .features {
+  padding: 4rem 0 5rem;
+  background: #f6f1e5;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
   display: flex;
   align-items: center;
-  padding: 4rem 0;
-  width: 100%;
+  gap: 1.25rem;
+  min-height: 190px;
+  padding: 1.5rem;
+  background: #fffdf8;
+  border: 1px solid #e6dcc7;
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgb(45 32 14 / 8%);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.featureSvg {
-  height: 180px;
-  width: 180px;
-  transition: transform 0.3s ease;
+.card:hover {
+  transform: translateY(-5px) rotate(-0.5deg);
+  box-shadow: 0 16px 30px rgb(45 32 14 / 14%);
 }
 
-.featureSvg:hover {
-  transform: scale(1.05);
+.playingCard {
+  display: flex;
+  flex: 0 0 68px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  color: #173b2b;
+  background: #fff;
+  border: 1px solid #d8d0c2;
+  border-radius: 9px;
+  box-shadow: 3px 4px 0 #e4dccd;
+  font-size: 1.65rem;
+  font-weight: 700;
 }
 
-.features h3 {
-  color: #1b4332;
-  margin-top: 1rem;
+.playingCard span:last-child {
+  font-size: 1.8rem;
 }
 
-.features p {
-  font-size: 1rem;
-  line-height: 1.6;
+.redSuit {
+  color: #b42332;
+}
+
+.card h3 {
+  margin: 0 0 0.5rem;
+  color: #173b2b;
+}
+
+.card p {
+  margin: 0;
+  color: #46534a;
+  line-height: 1.55;
+}
+
+@media screen and (max-width: 996px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
 }

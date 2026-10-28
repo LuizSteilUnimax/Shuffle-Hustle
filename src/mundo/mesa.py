@@ -1,4 +1,3 @@
-from copy import deepcopy
 from ..regras.validacao import validar_mesa
 
 class Mesa:
@@ -9,10 +8,12 @@ class Mesa:
         self.jogos.append(list(cartas))
 
     def snapshot(self):
-        return deepcopy(self.jogos)
+        # Cópia rasa: as cartas são comparadas por identidade (há cartas
+        # repetidas com dois baralhos), então o estado guarda os mesmos objetos.
+        return [list(jogo) for jogo in self.jogos]
 
     def restaurar(self, estado) -> None:
-        self.jogos = deepcopy(estado)
+        self.jogos = [list(jogo) for jogo in estado]
 
     def esta_valida(self) -> bool:
         return validar_mesa(self.jogos)

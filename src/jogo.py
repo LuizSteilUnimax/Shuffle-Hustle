@@ -10,13 +10,21 @@ class Jogo:
     def __init__(self):
         pygame.init()
         self.largura, self.altura = LARGURA, ALTURA
-        self.tela = pygame.display.set_mode((self.largura, self.altura))
+        # SCALED mantém a resolução lógica e estica a imagem para a janela,
+        # convertendo também as posições do mouse.
+        try:
+            self.tela = pygame.display.set_mode(
+                (self.largura, self.altura), pygame.SCALED | pygame.RESIZABLE
+            )
+        except pygame.error:
+            self.tela = pygame.display.set_mode((self.largura, self.altura))
         pygame.display.set_caption(TITULO)
         self.relogio = pygame.time.Clock()
         self.rodando = True
         self.telas = {}
         self.volume = 100
         self.brilho = 80
+        self.num_bots = 2
         self.audio = Audio()
         self.audio.definir_volume(self.volume)
         self.trocar_tela("menu")
@@ -24,10 +32,9 @@ class Jogo:
     def trocar_tela(self, nome):
         classes = {"menu": Menu, "configuracoes": Configuracoes, "gameplay": Gameplay}
         self.tela_atual = classes[nome](self)
-
         if nome == "gameplay":
-            self.audio.tocar_gameplay()
-        elif nome in {"menu", "configuracoes"}:
+            self.audio.tocar_partida()
+        else:
             self.audio.tocar_menu()
 
     def aplicar_brilho(self):
@@ -45,6 +52,8 @@ class Jogo:
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     self.rodando = False
+                elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_F11:
+                    pygame.display.toggle_fullscreen()
                 else:
                     self.tela_atual.tratar_evento(evento)
             self.tela_atual.atualizar(dt)

@@ -1,11 +1,20 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 # Entidades
 
-## Estrutura principal
+## Elementos do jogo
 
-- O jogo é composto por entidades como jogadores, cartas, baralho e partida.
-- Cada entidade representa uma parte da lógica ou do estado do jogo.
-- A organização destas classes facilita manutenção, expansão e testes do sistema.
+- `Carta`: valor, naipe e pontos de uma carta comum.
+- `Baralho`: cria e embaralha dois conjuntos de 52 cartas, sem coringas.
+- `Jogador`: mantém a mão e os pontos.
+- `Bot`: jogador automático que baixa jogos da mão, encaixa cartas na mesa e usa
+  cartas sobrando de jogos da mesa; se não conseguir, compra.
+- `Partida`: controla jogadores, turnos, movimentação de cartas, compra,
+  validação do fim do turno e contagem final.
+- `Mesa`: armazena as combinações comunitárias.
+
+As cartas são dados independentes do Pygame. A interface desenha esses dados
+com `CartaSprite`, que usa as imagens configuradas em `src/ui/tema.py` quando
+existirem.

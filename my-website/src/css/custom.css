@@ -4,13 +4,13 @@
  */
 
 :root {
-  --ifm-color-primary: #1b5e20;
-  --ifm-color-primary-dark: #174d1a;
-  --ifm-color-primary-darker: #154718;
-  --ifm-color-primary-darkest: #103513;
-  --ifm-color-primary-light: #23752a;
-  --ifm-color-primary-lighter: #27842f;
-  --ifm-color-primary-lightest: #2f9c39;
+  --ifm-color-primary: #1b5b3a;
+  --ifm-color-primary-dark: #174d31;
+  --ifm-color-primary-darker: #15472d;
+  --ifm-color-primary-darkest: #103923;
+  --ifm-color-primary-light: #26734b;
+  --ifm-color-primary-lighter: #2d8255;
+  --ifm-color-primary-lightest: #399b66;
 
   --ifm-code-font-size: 95%;
 
@@ -21,10 +21,11 @@
     Verdana,
     sans-serif;
 
-  --ifm-navbar-background-color: #14532d;
+  --ifm-navbar-background-color: #173b2b;
   --ifm-footer-background-color: #0f172a;
 
-  --ifm-background-color: #f8fafc;
+  --ifm-background-color: #fbf8f0;
+  --ifm-font-color-base: #25352b;
 
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
 }
@@ -40,7 +41,8 @@
   --ifm-color-primary-lighter: #69e497;
   --ifm-color-primary-lightest: #88ebad;
 
-  --ifm-background-color: #0f172a;
+  --ifm-background-color: #17221b;
+  --ifm-navbar-background-color: #102a1e;
 
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.08);
 }
@@ -50,9 +52,9 @@
 .hero {
   background: linear-gradient(
     135deg,
-    #14532d 0%,
-    #166534 50%,
-    #1b5e20 100%
+    #173b2b 0%,
+    #205b3e 55%,
+    #28744b 100%
   );
 
   color: white;
@@ -62,6 +64,16 @@
 
 .navbar {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+.navbar__link,
+.navbar__title {
+  color: #e8f2e9;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: #ffffff;
 }
 
 /* Cards da página inicial */

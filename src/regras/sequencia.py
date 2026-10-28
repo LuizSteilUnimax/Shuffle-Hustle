@@ -1,11 +1,27 @@
-from .coringa import contar_coringas
+def _consecutivas(cartas, ordem) -> bool:
+    return all(
+        ordem(atual) == ordem(anterior) + 1
+        for anterior, atual in zip(cartas, cartas[1:])
+    )
+
+
+def _ordem_as_alto(carta) -> int:
+    return 14 if carta.valor == "A" else carta.ordem
+
+
+def ordem_sequencia(cartas):
+    """Retorna as cartas na ordem da sequência, ou None se não formarem uma.
+
+    O ás pode ser baixo (A, 2, 3) ou alto (Q, K, A), mas não dá a volta (K, A, 2).
+    """
+    if len(cartas) < 3 or len({carta.naipe for carta in cartas}) != 1:
+        return None
+    for ordem in (lambda carta: carta.ordem, _ordem_as_alto):
+        ordenadas = sorted(cartas, key=ordem)
+        if _consecutivas(ordenadas, ordem):
+            return ordenadas
+    return None
+
 
 def validar_sequencia(cartas) -> bool:
-    if len(cartas) < 3 or contar_coringas(cartas) > 1:
-        return False
-    normais = sorted((c for c in cartas if not c.coringa), key=lambda c: c.ordem)
-    if not normais or len({c.naipe for c in normais}) != 1:
-        return False
-    faltantes = sum(max(0, b.ordem - a.ordem - 1) for a, b in zip(normais, normais[1:]))
-    repetidas = len({c.ordem for c in normais}) != len(normais)
-    return not repetidas and faltantes <= contar_coringas(cartas)
+    return ordem_sequencia(cartas) is not None

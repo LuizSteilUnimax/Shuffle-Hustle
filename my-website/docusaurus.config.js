@@ -5,8 +5,8 @@ import { themes as prismThemes } from "prism-react-renderer";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Mexe-Mexe",
-  tagline: "Projeto acadêmico desenvolvido em Python e Pygame",
-  favicon: "img/favicon.ico",
+  tagline: "Um jogo de cartas feito em Python e Pygame",
+  favicon: "img/baralho-copag.webp",
 
   future: {
     v4: true,
@@ -64,23 +64,16 @@ const config = {
         items: [
           {
             type: "docSidebar",
-            sidebarId: "tutorialSidebar",
+            sidebarId: "projectSidebar",
             position: "left",
             label: "Documentação",
           },
 
           {
-            to: "/docs/intro",
-            label: "Projeto",
-            position: "left",
-          },
-
-          {
             to: "/docs/regras",
-            label: "Regras",
+            label: "Como jogar",
             position: "left",
           },
-
           {
             to: "/docs/arquitetura",
             label: "Arquitetura",
@@ -97,7 +90,7 @@ const config = {
             title: "Projeto",
             items: [
               {
-                label: "Introdução",
+                label: "Sobre o projeto",
                 to: "/docs/intro",
               },
               {
@@ -124,10 +117,7 @@ const config = {
           {
             title: "Código",
             items: [
-              {
-                label: "Estrutura do Projeto",
-                to: "/docs/roadmap",
-              },
+              { label: "Próximas etapas", to: "/docs/roadmap" },
             ],
           },
         ],

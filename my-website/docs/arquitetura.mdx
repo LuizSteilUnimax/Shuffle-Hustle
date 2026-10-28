@@ -1,11 +1,40 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Arquitetura
 
-## Visão geral
+## Separação de responsabilidades
 
-- A estrutura do projeto está organizada em módulos de regras, entidades e interface.
-- O motor principal coordena a lógica da partida e a comunicação entre os componentes.
-- A documentação será expandida conforme a arquitetura do jogo evoluir.
+- `src/entidades/` contém o estado da partida, jogadores, bots, cartas e baralho.
+- `src/regras/` valida combinações sem depender do Pygame.
+- `src/mundo/mesa.py` mantém as combinações comunitárias.
+- `src/ui/` trata eventos, desenha a mesa e converte interações em ações da
+  partida.
+- `src/ui/tema.py` concentra cores, fontes, medidas e imagens opcionais. Um
+  novo visual começa por esse arquivo.
+- `src/ui/animacao.py` faz as cartas deslizarem entre posições. A tela de
+  jogo compara onde cada carta estava antes e depois de uma ação e anima a
+  diferença, então as regras não sabem nada sobre animação.
+- `src/audio.py` toca a música do menu e da partida e os efeitos sonoros. Cada
+  som é opcional: sem o arquivo, ou sem dispositivo de áudio, fica em silêncio.
+- `src/ui/desenho.py` reúne as primitivas do estilo padrão: sombras suaves,
+  brilhos, painéis, texto e contornos tracejados.
+
+## Arte
+
+Arquivos em `assets/` substituem o desenho padrão sem alterar código:
+
+- `assets/cards/<valor>_<naipe>.png` (ex.: `A_copas.png`, `10_espadas.png`);
+- `assets/cards/verso.png`;
+- `assets/backgrounds/mesa.png`;
+- `assets/fonts/` — Poppins (interface) e Barlow Condensed (índices das
+  cartas), ambas sob a licença SIL Open Font License (arquivos `OFL-*.txt`).
+
+Arquivos ausentes usam o desenho padrão.
+
+## Fluxo do turno
+
+`Partida` guarda a mesa e a mão no início do turno. As cartas são movidas
+livremente, e a validação acontece ao finalizar. Desfazer ou comprar restaura o
+estado inicial, então uma jogada recusada não deixa mudanças parciais.

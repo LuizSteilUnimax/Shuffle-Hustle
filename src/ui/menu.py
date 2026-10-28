@@ -1,8 +1,13 @@
-import os
 import math
 import pygame
+
+from . import desenho, tema
 from .botao import Botao
-from ..cores import BRANCO, VERDE_MESA
+from .carta_sprite import CartaSprite
+from ..entidades.carta import Carta
+
+# Leque decorativo de cartas acima dos botões.
+CARTAS_LEQUE = (("10", "Espadas"), ("J", "Ouros"), ("A", "Copas"), ("Q", "Paus"), ("K", "Copas"))
 
 
 class Menu:
@@ -10,27 +15,34 @@ class Menu:
         self.jogo = jogo
         self.t = 0.0
 
-        self.title_base = 60
-        self.title_color = (255, 235, 120)  # warm yellow tone
-
-        fonte = pygame.font.Font(None, 45)
         cx = jogo.largura // 2
         self.botoes = {
-            "jogar": Botao("Jogar", (cx - 150, 170, 300, 70), fonte),
-            "config": Botao("Configurações", (cx - 150, 260, 300, 70), fonte),
-            "sair": Botao("Sair", (cx - 150, 350, 300, 70), fonte),
+            "jogar": Botao("Jogar", (cx - 140, 400, 280, 56), papel="primario"),
+            "config": Botao("Configurações", (cx - 140, 470, 280, 56)),
+            "sair": Botao("Sair", (cx - 140, 540, 280, 56)),
         }
+        self.leque = self._criar_leque()
 
-        # load background images for decoration
-        assets_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "backgrounds")
-        paths = [os.path.join(assets_dir, f) for f in ("costelao.jpg", "original.jpg") if os.path.exists(os.path.join(assets_dir, f))]
-        self.imgs = []
-        for p in paths:
-            try:
-                surf = pygame.image.load(p).convert_alpha()
-                self.imgs.append(surf)
-            except Exception:
-                pass
+    def _criar_leque(self):
+        """Cartas giradas em leque; cada uma já leva a própria sombra."""
+        cartas = []
+        margem = 14
+        for i, (valor, naipe) in enumerate(CARTAS_LEQUE):
+            angulo = (i - 2) * 13
+            base = pygame.Surface(
+                (CartaSprite.LARGURA + margem * 2, CartaSprite.ALTURA + margem * 2), pygame.SRCALPHA
+            )
+            rect = pygame.Rect(margem, margem, CartaSprite.LARGURA, CartaSprite.ALTURA)
+            desenho.sombra(base, rect, tema.RAIO_CARTA, (2, 5), desfoque=6, alpha=110)
+            base.blit(CartaSprite.superficie(Carta(valor, naipe)), rect)
+            girada = pygame.transform.rotozoom(base, -angulo, 1.0)
+            raio = 280
+            centro = (
+                math.sin(math.radians(angulo)) * raio,
+                -math.cos(math.radians(angulo)) * raio + raio,
+            )
+            cartas.append((girada, centro))
+        return cartas
 
     def tratar_evento(self, evento):
         if self.botoes["jogar"].clicado(evento):
@@ -44,47 +56,19 @@ class Menu:
         self.t += dt
 
     def desenhar(self, tela):
-        tela.fill(VERDE_MESA)
+        tema.desenhar_fundo(tela)
+        cx = self.jogo.largura // 2
 
-        # title with faster pulsating size
-        scale = 1.0 + 0.10 * math.sin(self.t * 3.5)
-        tamanho = max(28, int(self.title_base * scale))
-        fonte_titulo = pygame.font.Font(None, tamanho)
-        titulo = fonte_titulo.render("Mexe-Mexe", True, self.title_color)
-        tela.blit(titulo, titulo.get_rect(center=(self.jogo.largura // 2, 80)))
+        flutuacao = math.sin(self.t * 1.6) * 4
+        for imagem, (dx, dy) in self.leque:
+            tela.blit(imagem, imagem.get_rect(center=(cx + dx, 262 + dy + flutuacao)))
 
-        # draw buttons
+        fonte_titulo = tema.fonte("negrito", 72)
+        desenho.texto(tela, "Mexe-Mexe", fonte_titulo, tema.escurecer(tema.FELTRO_BORDA, 0.4),
+                      center=(cx + 3, 92 + 4))
+        desenho.texto(tela, "Mexe-Mexe", fonte_titulo, tema.ACENTO, center=(cx, 92))
+        desenho.texto(tela, "JOGO DE CARTAS", tema.fonte("seminegrito", 14), tema.TEXTO_SUAVE,
+                      center=(cx, 148))
+
         for botao in self.botoes.values():
             botao.desenhar(tela)
-
-        # decorative side images: display costelao.jpg on the left and original.jpg on the right
-        if len(self.imgs) >= 1:
-            center_y = self.jogo.altura // 2
-            desired_h = min(380, int(self.jogo.altura * 0.30))
-
-            # pick left and right images explicitly
-            img_left = self.imgs[0]
-            img_right = self.imgs[1] if len(self.imgs) > 1 else self.imgs[0]
-
-            def prepare(img):
-                sf = desired_h / max(1, img.get_height())
-                w = int(img.get_width() * sf)
-                h = int(img.get_height() * sf)
-                return pygame.transform.smoothscale(img, (w, h))
-
-            left_img = prepare(img_left)
-            right_img = prepare(img_right)
-
-            angle_l = 10 * math.sin(self.t * 4.5)
-            angle_r = -10 * math.sin(self.t * 4.5 + 0.6)
-
-            left_r = pygame.transform.rotozoom(left_img, angle_l, 1.0)
-            right_r = pygame.transform.rotozoom(right_img, angle_r, 1.0)
-
-            lx = 48
-            ly = center_y - left_r.get_height() // 2
-            rx = self.jogo.largura - 48 - right_r.get_width()
-            ry = center_y - right_r.get_height() // 2
-
-            tela.blit(left_r, (lx, ly))
-            tela.blit(right_r, (rx, ry))

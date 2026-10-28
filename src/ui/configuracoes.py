@@ -1,19 +1,31 @@
 import pygame
+
+from . import desenho, tema
 from .botao import Botao
-from ..cores import BRANCO, PRETO, VERDE_MESA
 
 
 class Configuracoes:
     def __init__(self, jogo):
         self.jogo = jogo
-        self.fonte = pygame.font.Font(None, 40)
-        self.fonte_label = pygame.font.Font(None, 28)
         self.volume = getattr(jogo, "volume", 100)
         self.brilho = getattr(jogo, "brilho", 80)
+        self.num_bots = getattr(jogo, "num_bots", 2)
         self.slider_ativo = None
-        self.trilha_volume = pygame.Rect(jogo.largura // 2 - 180, 180, 360, 18)
-        self.trilha_brilho = pygame.Rect(jogo.largura // 2 - 180, 290, 360, 18)
-        self.voltar = Botao("Voltar", (jogo.largura // 2 - 150, 430, 300, 55), self.fonte)
+
+        cx = jogo.largura // 2
+        self.painel = pygame.Rect(cx - 260, 160, 520, 420)
+        self.trilha_volume = pygame.Rect(cx - 200, 238, 340, 18)
+        self.trilha_brilho = pygame.Rect(cx - 200, 324, 340, 18)
+        self.botoes_bots = {
+            quantidade: Botao(str(quantidade), (cx - 200 + i * 84, 412, 72, 44))
+            for i, quantidade in enumerate((1, 2, 3))
+        }
+        self._marcar_bots()
+        self.voltar = Botao("Voltar", (cx - 120, 498, 240, 52))
+
+    def _marcar_bots(self):
+        for quantidade, botao in self.botoes_bots.items():
+            botao.papel = "primario" if quantidade == self.num_bots else "secundario"
 
     def _atualizar_slider(self, slider, posicao_x):
         inicio = slider.x
@@ -23,32 +35,35 @@ class Configuracoes:
     def _aplicar_configuracoes(self):
         self.jogo.volume = self.volume
         self.jogo.brilho = self.brilho
-        if hasattr(self.jogo, "audio") and self.jogo.audio is not None:
-            self.jogo.audio.definir_volume(self.volume)
+        self.jogo.num_bots = self.num_bots
+        audio = getattr(self.jogo, "audio", None)
+        if audio is not None:
+            audio.definir_volume(self.volume)
 
     def _selecionar_slider(self, posicao):
-        if self.trilha_volume.collidepoint(posicao):
-            self.slider_ativo = ("volume", self.trilha_volume)
-            self.volume = self._atualizar_slider(self.trilha_volume, posicao[0])
-            self._aplicar_configuracoes()
-        elif self.trilha_brilho.collidepoint(posicao):
-            self.slider_ativo = ("brilho", self.trilha_brilho)
-            self.brilho = self._atualizar_slider(self.trilha_brilho, posicao[0])
-            self._aplicar_configuracoes()
+        for nome, trilha in (("volume", self.trilha_volume), ("brilho", self.trilha_brilho)):
+            if trilha.collidepoint(posicao):
+                self.slider_ativo = (nome, trilha)
+                setattr(self, nome, self._atualizar_slider(trilha, posicao[0]))
+                self._aplicar_configuracoes()
+                return
 
     def tratar_evento(self, evento):
         if self.voltar.clicado(evento):
             self.jogo.trocar_tela("menu")
             return
+        for quantidade, botao in self.botoes_bots.items():
+            if botao.clicado(evento):
+                self.num_bots = quantidade
+                self._marcar_bots()
+                self._aplicar_configuracoes()
+                return
 
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
             self._selecionar_slider(evento.pos)
         elif evento.type == pygame.MOUSEMOTION and self.slider_ativo is not None:
             nome, trilha = self.slider_ativo
-            if nome == "volume":
-                self.volume = self._atualizar_slider(trilha, evento.pos[0])
-            elif nome == "brilho":
-                self.brilho = self._atualizar_slider(trilha, evento.pos[0])
+            setattr(self, nome, self._atualizar_slider(trilha, evento.pos[0]))
             self._aplicar_configuracoes()
         elif evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:
             self.slider_ativo = None
@@ -56,30 +71,37 @@ class Configuracoes:
     def atualizar(self, dt):
         pass
 
-    def _desenhar_slider(self, tela, trilha, valor, label):
-        # use softer green track and white knob for contrast
-        track_color = (120, 170, 130)
-        pygame.draw.rect(tela, track_color, trilha, border_radius=10)
-        pygame.draw.rect(tela, BRANCO, trilha, 2, border_radius=10)
+    def _rotulo(self, tela, texto, y):
+        desenho.texto(tela, texto, tema.fonte("seminegrito", 13), tema.TEXTO_SUAVE,
+                      topleft=(self.trilha_brilho.x, y))
 
-        knob_size = 22
-        pos_x = trilha.x + (valor / 100) * trilha.width
-        knob_rect = pygame.Rect(pos_x - knob_size // 2, trilha.centery - knob_size // 2, knob_size, knob_size)
-        pygame.draw.circle(tela, BRANCO, knob_rect.center, knob_size // 2)
-        pygame.draw.circle(tela, PRETO, knob_rect.center, knob_size // 2, 2)
+    def _desenhar_slider(self, tela, trilha, valor):
+        faixa = pygame.Rect(trilha.x, trilha.centery - 4, trilha.width, 8)
+        preenchida = pygame.Rect(faixa.x, faixa.y, round(faixa.width * valor / 100), faixa.height)
+        pygame.draw.rect(tela, tema.escurecer(tema.SUPERFICIE, 0.3), faixa, border_radius=4)
+        pygame.draw.rect(tela, tema.ACENTO, preenchida, border_radius=4)
 
-        texto_label = self.fonte_label.render(f"{label}", True, BRANCO)
-        texto_valor = self.fonte_label.render(f"{valor}%", True, BRANCO)
-
-        tela.blit(texto_label, (trilha.x, trilha.y - 35))
-        tela.blit(texto_valor, (trilha.x + trilha.width + 18, trilha.y - 8))
+        centro = (preenchida.right, faixa.centery)
+        desenho.sombra(tela, (centro[0] - 11, centro[1] - 11, 22, 22), 11, (0, 2), desfoque=3)
+        pygame.draw.circle(tela, tema.COR_CARTA, centro, 11)
+        desenho.texto(tela, f"{valor}%", tema.fonte("seminegrito", 16), tema.TEXTO,
+                      midleft=(trilha.right + 20, trilha.centery))
 
     def desenhar(self, tela):
-        tela.fill(VERDE_MESA)
-        titulo = self.fonte.render("Configurações", True, BRANCO)
-        tela.blit(titulo, titulo.get_rect(center=(self.jogo.largura // 2, 80)))
+        tema.desenhar_fundo(tela)
+        cx = self.jogo.largura // 2
+        desenho.texto(tela, "Configurações", tema.fonte("negrito", tema.TAMANHO_TITULO), tema.ACENTO,
+                      center=(cx, 100))
+        desenho.painel_rebaixado(tela, self.painel)
 
-        self._desenhar_slider(tela, self.trilha_volume, self.volume, "Volume")
-        self._desenhar_slider(tela, self.trilha_brilho, self.brilho, "Brilho")
+        self._rotulo(tela, "VOLUME", 200)
+        self._desenhar_slider(tela, self.trilha_volume, self.volume)
+
+        self._rotulo(tela, "BRILHO", 286)
+        self._desenhar_slider(tela, self.trilha_brilho, self.brilho)
+
+        self._rotulo(tela, "OPONENTES (BOTS)", 376)
+        for botao in self.botoes_bots.values():
+            botao.desenhar(tela)
 
         self.voltar.desenhar(tela)

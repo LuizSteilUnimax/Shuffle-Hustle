@@ -4,12 +4,40 @@ sidebar_position: 2
 
 # Regras
 
-## Regras gerais
+## Preparação
 
-- Regra 1: O objetivo de cada jogador é formar combinações com as cartas de sua mão e descartá-las na mesa.
-- Regra 2: Trincas são válidas com pelo menos 3 cartas de mesmo número/valor, mesmo com naipes repetidos.
-- Regra 3: Sequências são válidas com no mínimo 3 cartas do mesmo naipe, com números sequeciais.
-- Regra 4: As combinações presentes na mesa são "comunitárias", podendo ser alteradas pelos jogadores, desde que mantendo o número mínimo de cartas.
-- Regra 5: Caso o jogador não tenha nenhuma carta para "ajudar" nos jogos da mesa, puxa uma carta do baralho (não há monte para descarte/lixo).
-- Regra 6: As jogadas e combinações possíveis dependem da capacidade de análise de cada jogador para utilizar das cartas em mesa para complementar o que possuem em mão.
-- Final do jogo: Quando um jogador atinge a condição de vitória (descarte das cartas em mão), os demais somam os pontos para definir o ranking entre os jogadores.
+- Dois baralhos comuns de 52 cartas (104 cartas), sem coringas.
+- Uma pessoa joga contra 1 a 3 bots (escolha em **Configurações**).
+- Cada jogador recebe 9 cartas; o restante forma o monte de compra.
+
+## Combinações
+
+- **Trinca:** três ou mais cartas do mesmo valor. Naipes repetidos são permitidos.
+- **Sequência:** três ou mais cartas consecutivas do mesmo naipe, sem valores
+  repetidos. O ás pode ser baixo (A, 2, 3) ou alto (Q, K, A), mas a sequência
+  não dá a volta (K, A, 2 não vale).
+
+## Turno
+
+Durante o turno, a mesa é uma área de trabalho:
+
+- Arraste cartas da mão para um jogo da mesa ou para **Novo jogo**.
+- Arraste cartas entre jogos da mesa à vontade: dividir sequências, juntar
+  cartas e montar jogos novos. Jogos inválidos ficam com contorno vermelho.
+- Cartas que você baixou neste turno ficam destacadas e podem voltar para a mão.
+  Cartas que já estavam na mesa não podem ir para a mão.
+- **Desfazer** devolve mesa e mão ao estado do início do turno.
+- **Finalizar jogada** só é aceito se você baixou ao menos uma carta da mão e
+  todos os jogos da mesa são válidos.
+- Se não baixar nenhuma carta, use **Comprar**: rearranjos da mesa são
+  desfeitos, você recebe uma carta e o turno passa. Não é possível comprar depois
+  de baixar cartas.
+- A ordem da mão pode ser alterada arrastando as cartas ou com **Ordenar mão**.
+
+## Fim da partida
+
+- Vence quem finalizar uma jogada sem cartas na mão.
+- Quando a última carta do monte é comprada, ela entra na mão de quem a comprou
+  e a partida termina imediatamente. Cada um soma os pontos das cartas na mão (cartas numéricas pelo valor de face;
+  J = 11, Q = 12, K = 13, A = 14). Vence quem tiver menos pontos; empates são
+  divididos.

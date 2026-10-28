@@ -1,43 +1,21 @@
-# Website
+# Documentação Mexe-Mexe
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Site do projeto, feito com Docusaurus. As páginas sobre regras, entidades,
+arquitetura e próximas etapas ficam em `docs/`.
 
-## Installation
+## Desenvolvimento local
+
+Requer Node.js 20 ou superior.
 
 ```bash
 npm install
-```
-
-**Note**: feel free to use the package manager of your choice.
-
-## Local Development
-
-```bash
 npm run start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
+## Build de produção
 
 ```bash
 npm run build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-## Deployment
-
-Using SSH:
-
-```bash
-USE_SSH=true npm run deploy
-```
-
-Not using SSH:
-
-```bash
-GIT_USER=<Your GitHub username> npm run deploy
-```
-
-If you are using GitHub Pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+Os arquivos estáticos gerados ficam em `build/`.

@@ -75,6 +75,31 @@ def texto(tela, conteudo, fonte, cor, **ancora):
     return rect
 
 
+def linhas_quebradas(conteudo, fonte, largura):
+    """Divide `conteudo` em linhas que cabem em `largura` pixels."""
+    linhas, atual = [], ""
+    for palavra in conteudo.split():
+        tentativa = f"{atual} {palavra}".strip()
+        if atual and fonte.size(tentativa)[0] > largura:
+            linhas.append(atual)
+            atual = palavra
+        else:
+            atual = tentativa
+    if atual:
+        linhas.append(atual)
+    return linhas
+
+
+def texto_quebrado(tela, conteudo, fonte, cor, topleft, largura, entrelinha=1.35):
+    """Parágrafo com quebra automática de linha; devolve o y logo abaixo dele."""
+    x, y = topleft
+    passo = round(fonte.get_linesize() * entrelinha)
+    for linha in linhas_quebradas(conteudo, fonte, largura):
+        tela.blit(fonte.render(linha, True, cor), (x, y))
+        y += passo
+    return y
+
+
 def contorno_tracejado(tela, cor, rect, traco=8, vao=6, largura=2):
     rect = pygame.Rect(rect)
     lados = (

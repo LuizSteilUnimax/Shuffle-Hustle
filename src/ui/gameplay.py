@@ -19,13 +19,18 @@ ESCALONAMENTO_BOT = 0.09
 
 
 class Gameplay:
-    def __init__(self, jogo):
+    def __init__(self, jogo, partida=None):
+        """Começa uma partida nova ou, com `partida`, retoma uma salva."""
         self.jogo = jogo
-        num_bots = getattr(jogo, "num_bots", 2)
-        self.humano = Jogador("Você")
-        jogadores = [self.humano] + [Bot(f"Bot {i + 1}") for i in range(num_bots)]
-        self.partida = Partida(jogadores)
-        self.partida.iniciar()
+        retomada = partida is not None
+        if not retomada:
+            num_bots = getattr(jogo, "num_bots", 2)
+            jogadores = [Jogador("Você")] + [Bot(f"Bot {i + 1}") for i in range(num_bots)]
+            partida = Partida(jogadores)
+            partida.iniciar()
+        self.partida = partida
+        self.humano = next(j for j in partida.jogadores if not j.eh_bot)
+        self._jogadas_salvas = partida.jogadas
 
         self.arrasto = None
         self.aviso = ""
@@ -55,12 +60,15 @@ class Gameplay:
         self.menu = Botao("Menu", (largura - 120, 14, 100, 36))
 
         centro = largura // 2
-        y_fim = altura // 2 + 60 + 17 * len(jogadores)
+        y_fim = altura // 2 + 60 + 17 * len(partida.jogadores)
         self.jogar_novamente = Botao(
             "Jogar novamente", (centro - 210, y_fim, 200, 46), papel="primario"
         )
         self.voltar_menu = Botao("Voltar ao menu", (centro + 10, y_fim, 200, 46))
 
+        if retomada:
+            self.retomar()
+            return
         # Distribuição: as cartas da mão saem do monte uma a uma.
         for i, (carta, _) in enumerate(self._layout_mao()):
             self.animacoes.adicionar(
@@ -68,6 +76,24 @@ class Gameplay:
             )
 
     # --- Estado ------------------------------------------------------------
+
+    def retomar(self):
+        """Volta à partida (vinda do menu ou do disco) sem arrasto pendente."""
+        self.arrasto = None
+        if not self.partida.encerrada:
+            self._mostrar_aviso(f"Partida retomada: rodada {self.partida.rodada}.")
+
+    def _chamar_jogo(self, metodo, *args):
+        # As telas de teste usam um jogo simplificado, sem sessão nem placar.
+        funcao = getattr(self.jogo, metodo, None)
+        if funcao is not None:
+            funcao(*args)
+
+    def _salvar_se_mudou(self):
+        """Salva a sessão a cada troca de turno."""
+        if self.partida.jogadas != self._jogadas_salvas:
+            self._jogadas_salvas = self.partida.jogadas
+            self._chamar_jogo("salvar_sessao")
 
     def _vez_do_humano(self) -> bool:
         return not self.partida.encerrada and self.partida.jogador_atual is self.humano
@@ -312,6 +338,10 @@ class Gameplay:
         self.finalizar.ativo = baixou
 
     def atualizar(self, dt):
+        self._atualizar_partida(dt)
+        self._salvar_se_mudou()
+
+    def _atualizar_partida(self, dt):
         self.tempo += dt
         self.animacoes.atualizar(dt)
         if self.tempo_aviso > 0:
@@ -324,6 +354,7 @@ class Gameplay:
 
         if self.partida.encerrada and not self.fim_anunciado:
             self.fim_anunciado = True
+            self._chamar_jogo("registrar_fim", self.partida)
             self._som("vitoria" if self.humano in self.partida.vencedores else "derrota")
 
         bot = self.partida.jogador_atual

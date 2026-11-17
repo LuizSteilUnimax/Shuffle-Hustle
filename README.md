@@ -19,8 +19,8 @@ A janela pode ser redimensionada; F11 alterna a tela cheia.
 
 Todo áudio é opcional: arquivos ausentes apenas deixam aquele som em silêncio.
 
-- `assets/sounds/loop-ambiance.mp3` e `loop-soundtrack.mp3`: música da partida.
-- Outros arquivos de áudio em `assets/sounds/`: música do menu (uma é sorteada).
+- `assets/sounds/loop-ambiance.mp3` e `loop-soundtrack.mp3`: música do jogo. Começa
+  ao abrir o jogo e continua, sem reiniciar, em todas as telas.
 - `assets/sounds/efeitos/<evento>.ogg` (ou `.wav`/`.mp3`): efeitos, com os eventos
   `comprar`, `baixar`, `invalido`, `confirmar`, `vitoria` e `derrota`.
 
@@ -33,12 +33,24 @@ Use apenas áudio com licença livre, já que o repositório é público.
 - `src/regras/`: validação de trincas, sequências e mesa.
 - `src/mundo/`: estado da mesa.
 - `src/ui/`: telas, HUD, botões e representação visual das cartas.
-- `src/jogo.py`: loop principal e troca de telas.
+- `src/jogo.py`: loop principal, troca de telas e partida em andamento.
+- `src/persistencia.py`: partida salva e placar, em JSON.
 - `main.py`: ponto de entrada.
 
-A implementação inclui menu, configurações (brilho e número de bots),
-partida contra 1 a 3 bots, rearranjo livre da mesa durante o turno, compra,
-fim de jogo e contagem de pontos.
+A implementação inclui menu, tutorial ("Como jogar"), configurações (volume,
+brilho e número de bots), partida contra 1 a 3 bots, rearranjo livre da mesa
+durante o turno, compra, fim de jogo, contagem de pontos e placar.
+
+## Partida salva e placar
+
+A partida em andamento é salva a cada troca de turno, ao voltar ao menu e ao
+fechar o jogo; o menu mostra **Continuar** enquanto houver uma. Ao terminar, a
+partida vai para o **Placar** (resumo e partidas recentes) e deixa de ser salva.
+
+Os arquivos `sessao.json` e `placar.json` ficam na pasta de dados do usuário:
+`~/.local/share/mexe-mexe` no Linux, `%APPDATA%\mexe-mexe` no Windows e
+`~/Library/Application Support/mexe-mexe` no macOS. A variável de ambiente
+`MEXE_MEXE_DADOS` troca essa pasta.
 
 ## Regras implementadas
 

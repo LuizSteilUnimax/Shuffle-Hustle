@@ -170,9 +170,8 @@ def test_audio_fica_em_silencio_sem_arquivos(tmp_path, monkeypatch):
     monkeypatch.setattr(audio, "caminho_asset", lambda *partes: tmp_path.joinpath(*partes))
     pygame.init()
     som = audio.Audio()
-    assert som.faixa_menu is None
-    som.tocar_menu()
-    som.tocar_partida()
+    som.tocar_musica()
+    som.atualizar()
     som.tocar_efeito("baixar")
     som.definir_volume(40)
     assert som.volume == 0.4

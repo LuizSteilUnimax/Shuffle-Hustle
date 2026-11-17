@@ -1,4 +1,6 @@
 from .baralho import Baralho
+from .bot import Bot
+from .carta import Carta
 from .jogador import Jogador
 from ..mundo.mesa import Mesa
 
@@ -29,6 +31,7 @@ class Partida:
         self.jogadores = list(jogadores) if jogadores else [Jogador("Jogador")]
         self.cartas_iniciais = cartas_iniciais
         self.indice_atual = 0
+        self.jogadas = 0
         self.encerrada = False
         self.monte_esgotado = False
         self.resultado = []
@@ -44,6 +47,11 @@ class Partida:
     def vencedor(self):
         return self.vencedores[0] if self.vencedores else None
 
+    @property
+    def rodada(self) -> int:
+        """Rodada atual, contando a partir de 1 (uma rodada = todos jogaram)."""
+        return self.jogadas // len(self.jogadores) + 1
+
     def iniciar(self) -> None:
         for _ in range(self.cartas_iniciais):
             for jogador in self.jogadores:
@@ -58,6 +66,7 @@ class Partida:
 
     def _proximo_turno(self) -> None:
         self.indice_atual = (self.indice_atual + 1) % len(self.jogadores)
+        self.jogadas += 1
         self._iniciar_turno()
 
     # --- Estado do turno -------------------------------------------------
@@ -179,3 +188,66 @@ class Partida:
         self.resultado = sorted(self.jogadores, key=lambda jogador: jogador.pontos)
         menor = self.resultado[0].pontos
         self.vencedores = [j for j in self.resultado if j.pontos == menor]
+
+    # --- Persistência ----------------------------------------------------
+
+    def para_dict(self) -> dict:
+        """Estado completo da partida em andamento, inclusive o turno em curso.
+
+        As cartas são comparadas por identidade (há cartas repetidas com dois
+        baralhos), então cada objeto vira um índice em uma lista de cartas.
+        """
+        cartas, indices = [], {}
+
+        def refs(lista):
+            resultado = []
+            for carta in lista:
+                if id(carta) not in indices:
+                    indices[id(carta)] = len(cartas)
+                    cartas.append([carta.valor, carta.naipe])
+                resultado.append(indices[id(carta)])
+            return resultado
+
+        dados = {
+            "versao": 1,
+            "monte": refs(self.baralho.cartas),
+            "jogadores": [
+                {"nome": jogador.nome, "bot": jogador.eh_bot, "mao": refs(jogador.mao)}
+                for jogador in self.jogadores
+            ],
+            "mesa": [refs(jogo) for jogo in self.mesa.jogos],
+            "indice_atual": self.indice_atual,
+            "jogadas": self.jogadas,
+            "mesa_inicio": [refs(jogo) for jogo in self._mesa_inicio],
+            "mao_inicio": refs(self._mao_inicio),
+        }
+        dados["cartas"] = cartas
+        return dados
+
+    @classmethod
+    def de_dict(cls, dados) -> "Partida":
+        """Recria uma partida salva por para_dict(). Erros de formato propagam."""
+        if dados.get("versao") != 1:
+            raise ValueError("Versão de partida salva desconhecida.")
+        cartas = [Carta(valor, naipe) for valor, naipe in dados["cartas"]]
+        if any(c.valor not in Carta.ORDEM or c.naipe not in Baralho.NAIPES for c in cartas):
+            raise ValueError("Carta desconhecida na partida salva.")
+
+        def objetos(indices):
+            return [cartas[i] for i in indices]
+
+        jogadores = []
+        for info in dados["jogadores"]:
+            jogador = (Bot if info["bot"] else Jogador)(info["nome"])
+            jogador.mao = objetos(info["mao"])
+            jogadores.append(jogador)
+
+        baralho = Baralho(0)
+        baralho.cartas = objetos(dados["monte"])
+        partida = cls(jogadores, cartas_iniciais=0, baralho=baralho)
+        partida.mesa.jogos = [objetos(jogo) for jogo in dados["mesa"]]
+        partida.indice_atual = dados["indice_atual"] % len(jogadores)
+        partida.jogadas = dados["jogadas"]
+        partida._mesa_inicio = [objetos(jogo) for jogo in dados["mesa_inicio"]]
+        partida._mao_inicio = objetos(dados["mao_inicio"])
+        return partida

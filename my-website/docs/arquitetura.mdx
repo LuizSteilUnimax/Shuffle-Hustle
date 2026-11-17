@@ -16,8 +16,12 @@ sidebar_position: 4
 - `src/ui/animacao.py` faz as cartas deslizarem entre posições. A tela de
   jogo compara onde cada carta estava antes e depois de uma ação e anima a
   diferença, então as regras não sabem nada sobre animação.
-- `src/audio.py` toca a música do menu e da partida e os efeitos sonoros. Cada
-  som é opcional: sem o arquivo, ou sem dispositivo de áudio, fica em silêncio.
+- `src/audio.py` toca a música, contínua entre todas as telas, e os efeitos
+  sonoros. Cada som é opcional: sem o arquivo, ou sem dispositivo de áudio,
+  fica em silêncio.
+- `src/persistencia.py` salva a partida em andamento (inclusive o turno em
+  curso) e registra as partidas encerradas no placar, em arquivos JSON na
+  pasta de dados do usuário.
 - `src/ui/desenho.py` reúne as primitivas do estilo padrão: sombras suaves,
   brilhos, painéis, texto e contornos tracejados.
 

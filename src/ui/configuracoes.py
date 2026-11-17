@@ -8,7 +8,7 @@ class Configuracoes:
     def __init__(self, jogo):
         self.jogo = jogo
         self.volume = getattr(jogo, "volume", 100)
-        self.brilho = getattr(jogo, "brilho", 80)
+        self.brilho = getattr(jogo, "brilho", 100)
         self.num_bots = getattr(jogo, "num_bots", 2)
         self.slider_ativo = None
 
@@ -103,5 +103,9 @@ class Configuracoes:
         self._rotulo(tela, "OPONENTES (BOTS)", 376)
         for botao in self.botoes_bots.values():
             botao.desenhar(tela)
+        if getattr(self.jogo, "tem_partida_em_andamento", lambda: False)():
+            desenho.texto(tela, "Vale a partir da próxima partida.", tema.fonte("regular", 13),
+                          tema.TEXTO_INATIVO, midleft=(self.botoes_bots[3].rect.right + 20,
+                                                       self.botoes_bots[3].rect.centery))
 
         self.voltar.desenhar(tela)
